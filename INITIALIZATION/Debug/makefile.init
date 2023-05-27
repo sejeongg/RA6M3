@@ -1,0 +1,11 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+arg1 = $(1)
+export PATH=C:\Renesas\RA\e2studio_v2021-10_fsp_v3.5.0\toolchains\gcc_arm\gcc-arm-none-eabi-10.3-2021.10\bin\;C:\Users\Sejeong\.eclipse\com.renesas.platform_1366354242\Utilities;C:/Renesas/RA/e2studio_v2021-10_fsp_v3.5.0/eclipse//plugins/com.renesas.runtime.jdk.hotspot.win32.x86_64_11.0.8.202009102051/jdk-11.0.8+10/bin/client;C:/Renesas/RA/e2studio_v2021-10_fsp_v3.5.0/eclipse//plugins/com.renesas.runtime.jdk.hotspot.win32.x86_64_11.0.8.202009102051/jdk-11.0.8+10/bin;C:/Users/Sejeong/AppData/Local/Temp/7zS86C9634C//plugins/com.renesas.runtime.jdk.hotspot.win32.x86_64_11.0.8.202009102051/jdk-11.0.8+10/bin/client;C:/Users/Sejeong/AppData/Local/Temp/7zS86C9634C//plugins/com.renesas.runtime.jdk.hotspot.win32.x86_64_11.0.8.202009102051/jdk-11.0.8+10/bin;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\HighTec\toolchains\tricore\v4.9.1.0-infineon-2.0\bin;C:\HighTec\licensemanager;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Bandizip\;C:\Users\Sejeong\AppData\Local\Microsoft\WindowsApps;C:\Users\Sejeong\AppData\Local\Temp\7zS86C9634C;;C:\Users\Sejeong\AppData\Local\Temp\7zS86C9634C
+export TCINSTALL=C:\Renesas\RA\e2studio_v2021-10_fsp_v3.5.0\toolchains\gcc_arm\gcc-arm-none-eabi-10.3-2021.10$(call arg1,\)
+export CWD=$(CURDIR)
+export TC_VERSION=10.3.1.20210824
+export PWD=$(CURDIR)
+export GCC_VERSION=10.3.1
