@@ -31,6 +31,7 @@ RM := rm -rf
 -include AppWizard/Source/CustomCode/subdir.mk
 -include AppWizard/Source/subdir.mk
 -include AppWizard/Resource/Image/subdir.mk
+-include AppWizard/Resource/Font/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -68,33 +69,33 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-LCD_example1.srec \
+Renesas_SummerCamp_CAN_Ex1.srec \
 
 SECONDARY_SIZE += \
-LCD_example1.siz \
+Renesas_SummerCamp_CAN_Ex1.siz \
 
 
 # All Target
-all: LCD_example1.elf secondary-outputs
+all: Renesas_SummerCamp_CAN_Ex1.elf secondary-outputs
 
 # Tool invocations
-LCD_example1.elf: $(OBJS) $(USER_OBJS) $(LINKER_SCRIPT)
+Renesas_SummerCamp_CAN_Ex1.elf: $(OBJS) $(USER_OBJS) $(LINKER_SCRIPT)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GNU Arm Cross C Linker'
-	$(file > LCD_example1.elf.in,-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O2 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal  -g -T "fsp.ld" -Xlinker --gc-sections -L "C:\\Users\\Sejeong\\ra6m3_ws\\LCD_example1/script" -L "C:\\Users\\Sejeong\\ra6m3_ws\\LCD_example1\\ra\\segger\\emwin\\Library\\cm4_gcc" -Wl,-Map,"LCD_example1.map" --specs=nano.specs --specs=rdimon.specs -o "LCD_example1.elf" -Wl,--start-group $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--end-group)
-	arm-none-eabi-gcc @"LCD_example1.elf.in"
+	$(file > Renesas_SummerCamp_CAN_Ex1.elf.in,-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O2 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -Wall -Wextra -Wmissing-declarations -Wconversion -Wpointer-arith -Wshadow -Wlogical-op -Waggregate-return -Wfloat-equal  -g -T "fsp.ld" -Xlinker --gc-sections -L "C:\\Users\\Sejeong\\ra6m3_ws\\LCD_example1/script" -L "C:\\Users\\Sejeong\\ra6m3_ws\\LCD_example1\\ra\\segger\\emwin\\Library\\cm4_gcc" -Wl,-Map,"Renesas_SummerCamp_CAN_Ex1.map" --specs=nano.specs --specs=rdimon.specs -o "Renesas_SummerCamp_CAN_Ex1.elf" -Wl,--start-group $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--end-group)
+	arm-none-eabi-gcc @"Renesas_SummerCamp_CAN_Ex1.elf.in"
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-LCD_example1.srec: LCD_example1.elf
+Renesas_SummerCamp_CAN_Ex1.srec: Renesas_SummerCamp_CAN_Ex1.elf
 	@echo 'Invoking: GNU Arm Cross Create Flash Image'
-	arm-none-eabi-objcopy -O srec "LCD_example1.elf"  "LCD_example1.srec"
+	arm-none-eabi-objcopy -O srec "Renesas_SummerCamp_CAN_Ex1.elf"  "Renesas_SummerCamp_CAN_Ex1.srec"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-LCD_example1.siz: LCD_example1.elf
+Renesas_SummerCamp_CAN_Ex1.siz: Renesas_SummerCamp_CAN_Ex1.elf
 	@echo 'Invoking: GNU Arm Cross Print Size'
-	arm-none-eabi-size --format=berkeley "LCD_example1.elf"
+	arm-none-eabi-size --format=berkeley "Renesas_SummerCamp_CAN_Ex1.elf"
 	@echo 'Finished building: $@'
 	@echo ' '
 
@@ -160,7 +161,7 @@ ifneq ($(strip $(C_DEPS)),)
 	-@ xargs -s 6000 -t -a clean_C_DEPS.tmp $(RM)
 	-@$(RM) clean_C_DEPS.tmp
 endif
-	-$(RM)  LCD_example1.elf
+	-$(RM)  Renesas_SummerCamp_CAN_Ex1.elf
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)

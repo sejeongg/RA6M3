@@ -4,16 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../AppWizard/Resource/Image/DARK_Image_DiagLinesGray_40x40.c \
-../AppWizard/Resource/Image/dark.c 
+../AppWizard/Resource/Image/CanChat.c 
 
 OBJS += \
-./AppWizard/Resource/Image/DARK_Image_DiagLinesGray_40x40.o \
-./AppWizard/Resource/Image/dark.o 
+./AppWizard/Resource/Image/CanChat.o 
 
 C_DEPS += \
-./AppWizard/Resource/Image/DARK_Image_DiagLinesGray_40x40.d \
-./AppWizard/Resource/Image/dark.d 
+./AppWizard/Resource/Image/CanChat.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

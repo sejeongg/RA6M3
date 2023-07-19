@@ -1,8 +1,8 @@
 #include "emWin_thread.h"
 #include "hal_data.h"
-#include "C:\Users\Sejeong\AppData\Local\AppWizard\Project\LCD_character\Source\CustomCode\Application.h"
-#include "C:\Users\Sejeong\AppData\Local\AppWizard\Project\LCD_character\Source\Generated\Resource.h"
-#include "C:\Users\Sejeong\AppData\Local\AppWizard\Project\LCD_character\Source\Generated\ID_SCREEN_00.h"
+#include "C:\Users\Sejeong\ra6m3_ws\LCD_example1\AppWizard\Source\CustomCode\Application.h"
+#include "C:\Users\Sejeong\ra6m3_ws\LCD_example1\AppWizard\Source\Generated\Resource.h"
+#include "C:\Users\Sejeong\ra6m3_ws\LCD_example1\AppWizard\Source\Generated\ID_SCREEN_00.h"
 #include "UART_SERIAL.h"
 #include "CAN_SETTING.h"
 #include "GPT.h"
@@ -10,28 +10,16 @@
 #include "LCD.h"
 
 void LED_SETTING();
+extern can_frame_t conversion_can_tx_frame;
+
 
 /*           LCD           */
-int positionset(int value);
-void LCD_Subject(int y, char *can_sub);
-void LCD_Write(int y, char *can_msg);
-void LCD_Clear(int y, char *can_clear);
-void LCD_Subject_api(int y ,char *can_sub);
-void LCD_ID_api(int y ,char *can_id);
-void LCD_Write_api(int y ,uint8_t iter ,char *can_msg);
-void LCD_Clear_api(int y ,uint8_t iter ,char *can_clear);
-char buf;
-int cnt = 0;
-int posx = 0;
-TEXT_Handle create;
+unsigned char CAN_Tx_ID[2] = "00";
+char CAN_RxID[2] = "00";
+uint8_t CAN_Buffer[8] = {0,};
+uint8_t CAN_Buffer_t[8] = {0,};
 /* ----------------------- */
 
-char CAN_SUB[11] = "CAN Message";
-char CAN_RxID[7] = "RxID:00";
-uint8_t can_len_clear = 0;
-uint8_t CAN_Clear_Buffer[8] = {0,};
-
-extern char print[6];
 
 /*           GPT           */
 uint32_t SER_Timer_Period = 0x249F00;
@@ -95,7 +83,6 @@ void emWin_thread_entry(void *pvParameters)
 }
 
 
-
 void Callback_IRQ11(external_irq_callback_args_t *p_args){
 
     FSP_PARAMETER_NOT_USED(p_args);
@@ -148,6 +135,20 @@ void UART_SERIAL_CALLBACK(uart_callback_args_t *p_args)
         {
             case'>':
                 CAN_MSG_Tx();
+                APPW_SetText(ID_SCREEN_00, ID_TEXT_01, CAN_Tx_ID);
+
+
+                /*           LCD Write          */
+                for(int x = 0; x < 8; x++) CAN_Buffer_t[x] = 0;
+                for(int k = 0; k < conversion_can_tx_frame.data_length_code; k++)
+                {
+                    CAN_Buffer_t[k] = conversion_can_tx_frame.data[k];
+                }
+
+                APPW_SetText(ID_SCREEN_00, ID_TEXT_03, CAN_Buffer_t);
+                /* ---------------------------- */
+
+
                 break;
         }
     }
@@ -168,125 +169,25 @@ void CAN_CALLBACK(can_callback_args_t *p_args)
         // Rx mailbox id settings
         mailbox_number = p_args->mailbox;
 
-        /*           LCD Subject          */
-        LCD_Subject_api(-80, CAN_SUB);
-        /* ----------------------------- */
 
         /*           LCD CAN ID          */
-        LCD_Clear_api(-40, 7, CAN_RxID);
-        CAN_RxID[5] = (can_rx_id / 10) + ASC2D;
+        CAN_RxID[0] = (char)((can_rx_id / 10) + ASC2D);
         can_rx_id %= 10;
-        CAN_RxID[6] = can_rx_id + ASC2D;
-        LCD_ID_api(-40, CAN_RxID);
+        CAN_RxID[1] = (char)(can_rx_id + ASC2D);
+        APPW_SetText(ID_SCREEN_00, ID_TEXT_00, CAN_RxID);
         /* ----------------------------- */
-
-
-
-        /*           LCD Clear          */
-        uint8_t CAN_Clear[can_len_clear];
-        for(int k = 0; k < can_len_clear; k++)
-        {
-            CAN_Clear[k] = CAN_Clear_Buffer[k];
-        }
-
-        LCD_Clear_api(10, can_len_clear,CAN_Clear);
-        /* ---------------------------- */
 
 
         /*           LCD Write          */
-        uint8_t CAN_buffer[p_args->frame.data_length_code];
-        can_len_clear = p_args->frame.data_length_code; // for Clearing, set length of can msg.
-
+        for(int x = 0; x < 8; x++) CAN_Buffer[x] = 0;
         for(int k = 0; k < p_args->frame.data_length_code; k++)
         {
-            CAN_buffer[k] = p_args->frame.data[k];
-            CAN_Clear_Buffer[k] = CAN_buffer[k];
+            CAN_Buffer[k] = p_args->frame.data[k];
         }
-
-        LCD_Write_api(10, p_args->frame.data_length_code, CAN_buffer);
-
+        APPW_SetText(ID_SCREEN_00, ID_TEXT_02, CAN_Buffer);
         /* ---------------------------- */
 
     }
 
 }
 
-
-
-void LCD_Subject_api(int y ,char *can_sub){
-
-    for(int j = 0; j < 11; j++)LCD_Subject(y, can_sub);
-    cnt = 0;
-    posx = 0;
-}
-
-void LCD_ID_api(int y ,char *can_id){
-
-    for(int j = 0; j < 7; j++)LCD_Subject(y, can_id);
-    cnt = 0;
-    posx = 0;
-
-}
-
-void LCD_Write_api(int y ,uint8_t iter ,char *can_msg){
-
-    for(int l = 0; l < iter; l++)LCD_Write(y, can_msg);
-    cnt = 0;
-    posx = 0;
-
-}
-
-void LCD_Clear_api(int y ,uint8_t iter ,char *can_clear){
-
-    for(int l = 0; l < iter; l++)LCD_Clear(y, can_clear);
-    cnt = 0;
-    posx = 0;
-}
-
-
-
-int positionset(int value)
-{
-    int result = 0;
-
-    result = 25;
-    return result;
-}
-
-
-void LCD_Subject(int y, char *can_sub){
-
-    posx += positionset(cnt);
-    buf = can_sub[cnt];
-
-    create = TEXT_Create(60 + posx, y, 480, 272, 0x801, WM_CF_SHOW, &buf, TEXT_CF_LEFT | TEXT_CF_VCENTER);
-
-    TEXT_SetFont(create, GUI_FONT_32B_1);
-    TEXT_SetTextColor(create, GUI_WHITE);
-    cnt++;
-
-}
-
-void LCD_Write(int y, char *can_msg){
-
-    posx += positionset(cnt);
-    buf = can_msg[cnt];
-
-    create = TEXT_Create(60 + posx, y, 480, 272, 0x801, WM_CF_SHOW, &buf, TEXT_CF_LEFT | TEXT_CF_VCENTER);
-
-    TEXT_SetFont(create, GUI_FONT_32B_1);
-    TEXT_SetTextColor(create, GUI_WHITE);
-    cnt++;
-}
-
-void LCD_Clear(int y, char *can_clear){
-
-    posx += positionset(cnt);
-    buf = can_clear[cnt];
-
-    create = TEXT_Create(60 + posx, y, 480, 272, 0x801, WM_CF_SHOW, &buf, TEXT_CF_LEFT | TEXT_CF_VCENTER);
-
-    TEXT_SetFont(create, GUI_FONT_32B_1);
-    TEXT_SetTextColor(create, GUI_BLACK);
-    cnt++;
-}

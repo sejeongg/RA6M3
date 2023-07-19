@@ -27,10 +27,15 @@ Purpose     : Generated file do NOT edit!
 
 /*********************************************************************
 *
+*       Fonts
+*/
+extern const unsigned char acNotoSans_32_Normal_EXT_AA4[];
+
+/*********************************************************************
+*
 *       Images
 */
-extern const unsigned char acDARK_Image_DiagLinesGray_40x40[];
-extern const unsigned char acdark[];
+extern const unsigned char acCanChat[];
 
 /*********************************************************************
 *

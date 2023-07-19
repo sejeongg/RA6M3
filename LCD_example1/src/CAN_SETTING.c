@@ -15,6 +15,7 @@
 extern uint8_t Rx_SERIAL_DATA[100];
 extern uint8_t iter;
 
+extern unsigned char CAN_Tx_ID[2];
 uint8_t reset_flag = 0;
 can_frame_t g_can_tx_frame;
 can_frame_t conversion_can_tx_frame;
@@ -79,6 +80,7 @@ void CAN_MSG_Tx()
 
     uint8_t num_M, digit_id, MUL_10;
     uint8_t can_tx_msg_id = 0;
+    uint8_t can_tx_msg_id_g = 0;
     uint8_t i = 6;
     digit_id = 0;
 
@@ -113,11 +115,19 @@ void CAN_MSG_Tx()
         for(int k = 1; k < MUL_10_TIMES; k++){
             MUL_10 *= 10;
         }
+
         MUL_10_TIMES--;
         can_tx_msg_id += (Rx_SERIAL_DATA[i] - ASC2D) * MUL_10;
         i++;
     }
     // -----------------------------------------------------
+
+    can_tx_msg_id_g = can_tx_msg_id;
+
+    CAN_Tx_ID[0] =  (unsigned char)(can_tx_msg_id_g / 10 + ASC2D);
+    can_tx_msg_id_g %= 10;
+    CAN_Tx_ID[1] =  (unsigned char)(can_tx_msg_id_g + ASC2D);
+
 
 
     i = num_M + 3;

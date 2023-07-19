@@ -20,7 +20,7 @@
     <stringAttribute key="com.renesas.cdt.core.secondGDBExe" value="green_dsp-elf-gdb"/>
     <booleanAttribute key="com.renesas.cdt.core.secondGDBSupport" value="false"/>
     <intAttribute key="com.renesas.cdt.core.secondGdbPortNumber" value="61237"/>
-    <stringAttribute key="com.renesas.cdt.core.serverParam" value="-g E2LITE -t R7FA6M3AH  -uClockSrc= 0 -uAllowClockSourceInternal= 1 -uInteface= SWD -uIfSpeed= auto -w 1 -z 33 -uIdCodeBytes=  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF -uResetCon= 1 -uLowPower= 1 -uresetOnReload= 1 -n 0 -uFlashBp= 0 -ueraseRomOnDownload= 0 -ueraseDataRomOnDownload= 0 -uTraceMTB=  0 -uTraceSizeMTB=  1024 -uProgReWriteIRom= 0 -uProgReWriteDFlash= 0 -uOSRestriction= 0 -uTimeMeasurementEnable= 1"/>
+    <stringAttribute key="com.renesas.cdt.core.serverParam" value="-g E2LITE -t R7FA6M3AH  -uClockSrc= 0 -uAllowClockSourceInternal= 1 -uInteface= SWD -uIfSpeed= auto -w 1 -z 33 -uIdCodeBytes=  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF -uResetCon= 1 -uLowPower= 1 -uresetOnReload= 1 -n 0 -uFlashBp= 0 -ueraseRomOnDownload= 1 -ueraseDataRomOnDownload= 1 -uTraceMTB=  0 -uTraceSizeMTB=  1024 -uProgReWriteIRom= 0 -uProgReWriteDFlash= 0 -uOSRestriction= 0 -uTimeMeasurementEnable= 1"/>
     <booleanAttribute key="com.renesas.cdt.core.setResume" value="true"/>
     <booleanAttribute key="com.renesas.cdt.core.startServer" value="true"/>
     <stringAttribute key="com.renesas.cdt.core.targetDevice" value="R7FA6M3AH"/>
@@ -44,8 +44,8 @@
     <stringAttribute key="com.renesas.hardwaredebug.arm.e2lite.connection.id_code2" value="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
     <booleanAttribute key="com.renesas.hardwaredebug.arm.e2lite.connection.resetCon" value="true"/>
     <stringAttribute key="com.renesas.hardwaredebug.arm.e2lite.connection.type" value="SWD"/>
-    <booleanAttribute key="com.renesas.hardwaredebug.arm.e2lite.eraseDataRomOnDownload" value="false"/>
-    <booleanAttribute key="com.renesas.hardwaredebug.arm.e2lite.eraseRomOnDownload" value="false"/>
+    <booleanAttribute key="com.renesas.hardwaredebug.arm.e2lite.eraseDataRomOnDownload" value="true"/>
+    <booleanAttribute key="com.renesas.hardwaredebug.arm.e2lite.eraseRomOnDownload" value="true"/>
     <stringAttribute key="com.renesas.hardwaredebug.arm.e2lite.inputclock" value=""/>
     <stringAttribute key="com.renesas.hardwaredebug.arm.e2lite.interface.speed" value="auto"/>
     <booleanAttribute key="com.renesas.hardwaredebug.arm.e2lite.lowPowerHandling" value="true"/>

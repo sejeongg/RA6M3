@@ -1,0 +1,9 @@
+C:/Users/Sejeong/ra6m3_ws/Renesas_SummerCamp_CAN_Ex1/AppWizard/Source/APPW_MainTask.c
+C:/Users/Sejeong/ra6m3_ws/Renesas_SummerCamp_CAN_Ex1/AppWizard/Source/Generated/Resource.h
+C:/Users/Sejeong/ra6m3_ws/Renesas_SummerCamp_CAN_Ex1/AppWizard/Source/Generated/Resource.c
+C:/Users/Sejeong/ra6m3_ws/Renesas_SummerCamp_CAN_Ex1/AppWizard/Source/Generated/APPWConf.c
+C:/Users/Sejeong/ra6m3_ws/Renesas_SummerCamp_CAN_Ex1/AppWizard/Source/Generated/ID_SCREEN_00.h
+C:/Users/Sejeong/ra6m3_ws/Renesas_SummerCamp_CAN_Ex1/AppWizard/Source/Generated/ID_SCREEN_00.c
+C:/Users/Sejeong/ra6m3_ws/Renesas_SummerCamp_CAN_Ex1/AppWizard/Source/CustomCode/ID_SCREEN_00_Slots.c
+C:/Users/Sejeong/ra6m3_ws/Renesas_SummerCamp_CAN_Ex1/AppWizard/Resource/Image/CanChat.c
+C:/Users/Sejeong/ra6m3_ws/Renesas_SummerCamp_CAN_Ex1/AppWizard/Resource/Font/NotoSans_32_Normal_EXT_AA4.c
