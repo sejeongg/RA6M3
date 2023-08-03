@@ -63,6 +63,8 @@ void APPW_X_FS_Init(void){
 
 void emWin_thread_entry(void *pvParameters)
 {
+    R_CAN_Open(&g_can0_ctrl, &g_can0_cfg);
+
     R_SCI_UART_Open(&g_uart0_ctrl, &g_uart0_cfg); //UART START
 
     Serial_Write("Hello!");
@@ -100,6 +102,18 @@ void emWin_thread_entry(void *pvParameters)
 void Callback_IRQ11(external_irq_callback_args_t *p_args){
 
     FSP_PARAMETER_NOT_USED(p_args);
+    can_frame_t g_can_tx_frame_test;
+
+    uint8_t can_contents[] = "CANTxMsg"; // the message you want
+
+    g_can_tx_frame_test.id = 1;
+    g_can_tx_frame_test.id_mode = CAN_ID_MODE_STANDARD;
+    g_can_tx_frame_test.type = CAN_FRAME_TYPE_DATA;
+    g_can_tx_frame_test.data_length_code = 8;
+
+    memcpy(g_can_tx_frame_test.data, can_contents, 8);
+
+    R_CAN_Write(&g_can0_ctrl, 0, &g_can_tx_frame_test);
 
 
     int i;

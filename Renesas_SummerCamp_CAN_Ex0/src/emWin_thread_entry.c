@@ -63,6 +63,9 @@ void APPW_X_FS_Init(void){
 
 void emWin_thread_entry(void *pvParameters)
 {
+
+    R_CAN_Open(&g_can0_ctrl, &g_can0_cfg);
+
     R_SCI_UART_Open(&g_uart0_ctrl, &g_uart0_cfg); //UART START
 
     Serial_Write("Hello!");
