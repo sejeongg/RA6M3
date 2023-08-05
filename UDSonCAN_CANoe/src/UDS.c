@@ -23,7 +23,8 @@ uint8_t VIN[17] = {0x32, 0x54, 0x33, 0x52, 0x46, 0x52, 0x45,
                   0x56, 0x37, 0x44 , 0x57, 0x31, 0x30, 0x38,
                   0x31, 0x37, 0x37 };
 
-
+extern volatile uint8_t CF_Length;
+extern volatile uint8_t ST_min;
 extern volatile uint8_t Block_Size;
 extern volatile uint8_t Block_count;
 
@@ -72,8 +73,6 @@ void UDS(uint16_t canid, uint8_t * pData)
 
                 else if(dataIdentifier == VIN_id) // VIN
                 {
-
-
 
                     UDS_RESPONSE_FF(pData, sizeof(VIN), VIN);
 
@@ -216,6 +215,9 @@ void UDS_RESPONSE_FF(uint8_t * pData, uint8_t CFData_Size, uint8_t * CFData){
 
     UDS_Tx_CAN.data[0] = 0x10;
     UDS_Tx_CAN.data[1] = CFData_Size + 0x03;
+
+    CF_Length = CFData_Size;
+
     UDS_Tx_CAN.data[2] = pData[1] + 0x40;
     UDS_Tx_CAN.data[3] = pData[2];
     UDS_Tx_CAN.data[4] = pData[3];
@@ -230,10 +232,13 @@ void UDS_RESPONSE_FF(uint8_t * pData, uint8_t CFData_Size, uint8_t * CFData){
 
 void UDS_RESPONSE_FC(uint16_t length)
 {
+    Block_Size = 1;
 
-    if(length <= 10)Block_Size = 1;
-    else if(length <= 17)Block_Size = 2;
-    else if(length <= 24)Block_Size = 3;
+    while(1)
+    {
+        if(length <= (3 + 7 * Block_Size)) break;
+        else Block_Size++;
+    }
 
     uint8_t UDS_Clear[8] = {0,};
     memcpy(UDS_Tx_CAN_CF.data, UDS_Clear, 8);
@@ -248,12 +253,13 @@ void UDS_RESPONSE_FC(uint16_t length)
 
     //UDS_RESPONSE_CF_Tx();
 
-
 }
-uint8_t debug_size = 0;
+
+
+
 void UDS_RESPONSE_CF_Tx(volatile uint8_t Flag, uint8_t Size)
 {
-    debug_size = Size;
+
      for(int k = 1; k < 8; k++ ) UDS_Tx_CAN_CF.data[k] = 0;
 
      for(int i = 1; i < 8; i++)
@@ -281,7 +287,7 @@ void UDS_RESPONSE_CF_Tx(volatile uint8_t Flag, uint8_t Size)
 
      R_CAN_Write(&g_can0_ctrl, 0, &UDS_Tx_CAN_CF);
      UDS_Tx_CAN_CF.data[0] += 0x01;
-     R_BSP_SoftwareDelay(FC[2], BSP_DELAY_UNITS_MILLISECONDS);
+     R_BSP_SoftwareDelay(ST_min, BSP_DELAY_UNITS_MILLISECONDS);
 
 
 }

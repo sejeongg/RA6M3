@@ -20,9 +20,12 @@ extern volatile uint8_t FC[8];
 extern can_frame_t UDS_Tx_CAN_CF;
 extern can_frame_t UDS_Tx_CAN_Negative;
 
+
 can_frame_t UDS_Rx_CAN;
 volatile uint16_t can_rx_id = 0;
 
+volatile uint8_t CF_Length;
+volatile uint8_t ST_min;
 volatile uint8_t Block_Size;
 volatile uint8_t Block_count;
 
@@ -69,7 +72,7 @@ void hal_entry(void)
             switch(UDS__Flag.Flag)
             {
                 case VIN_Flag_On:
-                    UDS_RESPONSE_CF_Tx(UDS__Flag.Flag, sizeof(VIN));
+                    UDS_RESPONSE_CF_Tx(UDS__Flag.Flag, CF_Length);
                     break;
             }
 
@@ -231,13 +234,15 @@ void CAN_CALLBACK_A(can_callback_args_t *p_args)
             if((p_args->frame.data[0] >> 4) == 0x3){
 
                 //Block_Size = p_args->frame.data[1];
-                FC[2] = p_args->frame.data[2];
+                FC[2] = p_args->frame.data[2]; // ST min : when Consecutive Frame is transmitted, This means Delay time [ms].
+                ST_min = FC[2];
+
 
                 switch(UDS__Flag.Flag)
                 {
                     case VIN_Flag_On:
 
-                        UDS_RESPONSE_FC(sizeof(VIN));
+                        UDS_RESPONSE_FC(CF_Length);
                         break;
                 }
 
