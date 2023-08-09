@@ -22,11 +22,13 @@ volatile uint8_t FC[8] = {0,}; // Flow Control Variables
 uint8_t VIN[17] = {0x32, 0x54, 0x33, 0x52, 0x46, 0x52, 0x45,
                   0x56, 0x37, 0x44 , 0x57, 0x31, 0x30, 0x38,
                   0x31, 0x37, 0x37 };
+uint8_t veryBIG[3750];
 
-extern volatile uint8_t CF_Length;
-extern volatile uint8_t ST_min;
-extern volatile uint8_t Block_Size;
-extern volatile uint8_t Block_count;
+extern volatile uint16_t CF_Length;
+extern volatile uint16_t ST_min;
+extern volatile uint16_t Block_Size;
+extern volatile uint16_t Block_count;
+extern uint8_t delay;
 
 extern uint8_t degree;
 extern uint8_t DTC[3];
@@ -84,6 +86,24 @@ void UDS(uint16_t canid, uint8_t * pData)
 
 
                 }
+                /********
+                 * Read Data By Identifier : VeryBig
+                 * SID : 0x22
+                 * Request Parameter : 0x0003
+                 */
+                else if(dataIdentifier == VeryBIG) // VIN
+                {
+
+                    UDS_RESPONSE_FF(pData, sizeof(veryBIG), veryBIG);
+
+                    UDS__Flag.Flag = VeryBig_Flag_On;
+
+                    R_CAN_Write(&g_can0_ctrl, 0, &UDS_Tx_CAN);
+
+                    Serial_Write("  Pos : Read Data By Identifier : Very Big Number");
+
+                }
+
 
                 break;
 
@@ -203,7 +223,7 @@ void UDS_RESPONSE_SF(uint8_t * pData){
 
 }
 
-void UDS_RESPONSE_FF(uint8_t * pData, uint8_t CFData_Size, uint8_t * CFData){
+void UDS_RESPONSE_FF(uint8_t * pData, uint16_t CFData_Size, uint8_t * CFData){
 
     uint8_t UDS_Clear[8] = {0,};
     memcpy(UDS_Tx_CAN.data, UDS_Clear, 8);
@@ -213,8 +233,23 @@ void UDS_RESPONSE_FF(uint8_t * pData, uint8_t CFData_Size, uint8_t * CFData){
     UDS_Tx_CAN.type = CAN_FRAME_TYPE_DATA;
     UDS_Tx_CAN.data_length_code = 8;
 
-    UDS_Tx_CAN.data[0] = 0x10;
-    UDS_Tx_CAN.data[1] = CFData_Size + 0x03;
+
+
+    if(CFData_Size > 0xFC) // 길이를 표현하는 바이트가 2바이트가 넘을 때,
+    {
+        uint16_t Over_Size = CFData_Size + 0x03;
+
+        UDS_Tx_CAN.data[0] = ((Over_Size >> 8) & 0x0F) | 0x10;
+        UDS_Tx_CAN.data[1] = Over_Size & 0xFF;
+
+    } // 길이플 표현하는 바이트가 2바이트 이하일 때
+    else
+    {
+
+        UDS_Tx_CAN.data[0] = 0x10;
+        UDS_Tx_CAN.data[1] = CFData_Size + 0x03;
+
+    }
 
     CF_Length = CFData_Size;
 
@@ -230,13 +265,13 @@ void UDS_RESPONSE_FF(uint8_t * pData, uint8_t CFData_Size, uint8_t * CFData){
 }
 
 
-void UDS_RESPONSE_FC(uint16_t length)
+void UDS_RESPONSE_FC()
 {
     Block_Size = 1;
 
     while(1)
     {
-        if(length <= (3 + 7 * Block_Size)) break;
+        if(CF_Length <= (3 + 7 * Block_Size)) break;
         else Block_Size++;
     }
 
@@ -248,6 +283,7 @@ void UDS_RESPONSE_FC(uint16_t length)
     UDS_Tx_CAN_CF.type = CAN_FRAME_TYPE_DATA;
     UDS_Tx_CAN_CF.data_length_code = 8;
 
+    //UDS_Tx_CAN_CF.data[0] = 0x20;
     UDS_Tx_CAN_CF.data[0] = 0x21;
     Block_count = 1;
 
@@ -257,15 +293,15 @@ void UDS_RESPONSE_FC(uint16_t length)
 
 
 
-void UDS_RESPONSE_CF_Tx(volatile uint8_t Flag, uint8_t Size)
+void UDS_RESPONSE_CF_Tx(volatile uint8_t Flag, uint16_t Size)
 {
 
-     for(int k = 1; k < 8; k++ ) UDS_Tx_CAN_CF.data[k] = 0;
+     for(uint8_t k = 1; k < 8; k++ ) UDS_Tx_CAN_CF.data[k] = 0;
 
-     for(int i = 1; i < 8; i++)
+     for(uint8_t i = 1; i < 8; i++)
      {
 
-         if((Consecutive_Shift + ((Block_count-1) * 8 - (Block_count-1) * 1) + i) == Size)
+         if((Consecutive_Shift + ((Block_count-1) * 7) + i) == Size) // CF Length(Size) : 문자열 고유의 길이
          {
              break;
 
@@ -276,7 +312,12 @@ void UDS_RESPONSE_CF_Tx(volatile uint8_t Flag, uint8_t Size)
              {
                  case VIN_Flag_On:
 
-                     UDS_Tx_CAN_CF.data[i] = VIN[Consecutive_Shift + ((Block_count-1) * 8 - (Block_count-1) * 1) + i];
+                     UDS_Tx_CAN_CF.data[i] = VIN[Consecutive_Shift + ((Block_count-1) * 7) + i];
+                     break;
+
+                 case VeryBig_Flag_On:
+
+                     UDS_Tx_CAN_CF.data[i] = veryBIG[Consecutive_Shift + ((Block_count-1) * 7) + i];
                      break;
              }
 
@@ -285,9 +326,13 @@ void UDS_RESPONSE_CF_Tx(volatile uint8_t Flag, uint8_t Size)
 
      }
 
+     if(UDS_Tx_CAN_CF.data[0] == 0x30) UDS_Tx_CAN_CF.data[0] = 0x20; // Consecutive Frame을 보낼 때, 0x2F 넘어가면 0x20 !!
+
      R_CAN_Write(&g_can0_ctrl, 0, &UDS_Tx_CAN_CF);
      UDS_Tx_CAN_CF.data[0] += 0x01;
-     R_BSP_SoftwareDelay(ST_min, BSP_DELAY_UNITS_MILLISECONDS);
+
+     if(Flag == VeryBig_Flag_On) R_BSP_SoftwareDelay(delay, BSP_DELAY_UNITS_MILLISECONDS);
+     else R_BSP_SoftwareDelay(ST_min, BSP_DELAY_UNITS_MILLISECONDS);
 
 
 }

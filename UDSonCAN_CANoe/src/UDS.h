@@ -55,7 +55,9 @@ typedef enum UDS_Request_Parameter{
 typedef enum UDS_DataTx_{
 
     Servo_id = 0x0001,
-    VIN_id = 0x0002
+    VIN_id = 0x0002,
+    VeryBIG = 0x0003
+
 
 }UDS_ID;
 
@@ -72,6 +74,7 @@ typedef enum UDS_CANTP_OnOff{
 
     ////////////////////////////  Consecutive Frame  ///////////////////////////
     VIN_Flag_On = 1,
+    VeryBig_Flag_On = 2,
     ////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////  Consecutive Frame  ///////////////////////////
@@ -92,9 +95,9 @@ typedef enum UDS_DTC{
 
 void UDS(uint16_t canid, uint8_t * pData);
 void UDS_RESPONSE_SF(uint8_t * pData);
-void UDS_RESPONSE_FF(uint8_t * pData, uint8_t CFData_Size, uint8_t * CFData);
-void UDS_RESPONSE_FC(uint16_t length);
-void UDS_RESPONSE_CF_Tx(volatile uint8_t Flag, uint8_t Size);
+void UDS_RESPONSE_FF(uint8_t * pData, uint16_t CFData_Size, uint8_t * CFData);
+void UDS_RESPONSE_FC();
+void UDS_RESPONSE_CF_Tx(volatile uint8_t Flag, uint16_t Size);
 
 
 

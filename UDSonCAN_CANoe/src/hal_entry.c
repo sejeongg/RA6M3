@@ -12,6 +12,7 @@ void Initial_Setting();
 
 void Serial_Write(char *text);
 extern uint8_t VIN[17];
+extern uint8_t veryBIG[3750];
 
 //volatile uint8_t UDS_CF_Flag = 0;
 volatile UDS_Flag UDS__Flag;
@@ -23,11 +24,12 @@ extern can_frame_t UDS_Tx_CAN_Negative;
 
 can_frame_t UDS_Rx_CAN;
 volatile uint16_t can_rx_id = 0;
+uint8_t delay = 1;
 
-volatile uint8_t CF_Length;
-volatile uint8_t ST_min;
-volatile uint8_t Block_Size;
-volatile uint8_t Block_count;
+volatile uint16_t CF_Length; // CF Length : 문자열 고유의 길이
+volatile uint16_t ST_min;
+volatile uint16_t Block_Size;
+volatile uint16_t Block_count;
 
 uint8_t DTC[3] = {0,};
 
@@ -56,6 +58,8 @@ void hal_entry(void)
     Serial_Write("  Enter Diagnostic Mode!");
     Serial_Write("  This is RA6M3 Board");
 
+    R_PORT11->PODR_b.PODR0 = 0U;
+
     /* TODO: add your own code here */
 
 
@@ -69,12 +73,9 @@ void hal_entry(void)
 
         if(Block_count >= 1)
         {
-            switch(UDS__Flag.Flag)
-            {
-                case VIN_Flag_On:
-                    UDS_RESPONSE_CF_Tx(UDS__Flag.Flag, CF_Length);
-                    break;
-            }
+
+            UDS_RESPONSE_CF_Tx(UDS__Flag.Flag, CF_Length);
+
 
             if(Block_count == Block_Size)
             {
@@ -158,6 +159,19 @@ void Callback_IRQ(external_irq_callback_args_t *p_args){
 
             break;
         case 14:
+            if(delay == 1)
+            {
+                delay = 20;
+                R_PORT11->PODR_b.PODR0 = 1U;
+
+            }
+            else{
+
+                delay = 1;
+                R_PORT11->PODR_b.PODR0 = 0U;
+            }
+
+
              break;
 
     }
@@ -182,9 +196,9 @@ void Initial_Setting()
 
     R_SCI_UART_Open(&g_uart0_ctrl, &g_uart0_cfg);
 
+    memset(veryBIG,0xFF,3750);
 
-
-    //LED_SETTING();
+    LED_SETTING();
 
     Block_Size = 0;
     Block_count = 0;
@@ -198,18 +212,18 @@ void UART_SERIAL_CALLBACK(uart_callback_args_t *p_args)
 }
 
 
-//void LED_SETTING()
-//{
-//    R_PORT10->PDR_b.PDR8 = 1U;
-//    R_PORT10->PDR_b.PDR9 = 1U;
-//    R_PORT10->PDR_b.PDR10 = 1U;
-//    R_PORT11->PDR_b.PDR0 = 1U;
-//
-//    R_PORT10->PODR_b.PODR8 = 1U;
-//    R_PORT10->PODR_b.PODR9 = 1U;
-//    R_PORT10->PODR_b.PODR10 = 1U;
-//    R_PORT11->PODR_b.PODR0 = 1U;
-//}
+void LED_SETTING()
+{
+    R_PORT10->PDR_b.PDR8 = 1U;
+    R_PORT10->PDR_b.PDR9 = 1U;
+    R_PORT10->PDR_b.PDR10 = 1U;
+    R_PORT11->PDR_b.PDR0 = 1U;
+
+    R_PORT10->PODR_b.PODR8 = 1U;
+    R_PORT10->PODR_b.PODR9 = 1U;
+    R_PORT10->PODR_b.PODR10 = 1U;
+    R_PORT11->PODR_b.PODR0 = 1U;
+}
 
 
 /* Callback function */
@@ -218,10 +232,14 @@ void CAN_CALLBACK_A(can_callback_args_t *p_args)
     /// CAN MSG Interruptions When One Frame Arrives
     if(p_args->event == CAN_EVENT_RX_COMPLETE)
     {
-        /// Receive CAN ID setting
+        /*****
+         * Receive CAN ID setting
+         */
         can_rx_id = (uint16_t)p_args->frame.id;
 
-        /// Check Receive ID and Frame
+        /****
+         * Check Receive ID and Frame
+         */
         UDS_Rx_CAN.id = (uint16_t)p_args->frame.id;
         memcpy(UDS_Rx_CAN.data,p_args->frame.data, 8);
 
@@ -237,16 +255,7 @@ void CAN_CALLBACK_A(can_callback_args_t *p_args)
                 FC[2] = p_args->frame.data[2]; // ST min : when Consecutive Frame is transmitted, This means Delay time [ms].
                 ST_min = FC[2];
 
-
-                switch(UDS__Flag.Flag)
-                {
-                    case VIN_Flag_On:
-
-                        UDS_RESPONSE_FC(CF_Length);
-                        break;
-                }
-
-
+                UDS_RESPONSE_FC();
 
             }
 
